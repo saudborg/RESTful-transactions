@@ -25,6 +25,11 @@ import com.sauloborges.number26.entity.TransactionDTO;
 import com.sauloborges.number26.repository.TransactionRepository;
 import com.sauloborges.number26.utils.TransactionTestUtils;
 
+/**
+ * Tests for get a list of all transactions with the same type
+ * @author sauloborges
+ *
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { Application.class })
 @WebAppConfiguration

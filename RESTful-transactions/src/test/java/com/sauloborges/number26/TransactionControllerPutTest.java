@@ -24,6 +24,11 @@ import com.sauloborges.number26.entity.TransactionDTO;
 import com.sauloborges.number26.service.TransactionService;
 import com.sauloborges.number26.utils.TransactionTestUtils;
 
+/**
+ * Tests for put
+ * @author sauloborges
+ *
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { Application.class })
 @WebAppConfiguration
@@ -84,7 +89,6 @@ public class TransactionControllerPutTest {
 				.param("type", "type1")//
 				.sessionAttr("transactionDTO", new TransactionDTO())//
 		).andExpect(status().isBadRequest());
-		// TODO
 	}
 
 	@Test
@@ -148,6 +152,7 @@ public class TransactionControllerPutTest {
 
 	@Test
 	public void testPutAlreadyExists() throws Exception {
+		// update
 		TransactionDTO transaction = utils.createTransaction();
 
 		TransactionDTO transactionDatabase = transactionService.findByTransactionId(transaction.getTransactionId());
@@ -172,6 +177,20 @@ public class TransactionControllerPutTest {
 		assertFalse(transactionDatabase.getAmount() == transactionChangedDatabase.getAmount());
 		assertFalse(transactionDatabase.getType() == transactionChangedDatabase.getType());
 		assertEquals(transactionDatabase.getTransactionId(), transactionChangedDatabase.getTransactionId());
+
+	}
+	
+	@Test
+	public void testPutWithTheSameParentId() throws Exception {
+		mockMvc.perform(put("/transactionservice/transaction/1")//
+				.accept(MediaType.parseMediaType("application/json;charset=UTF-8"))//
+				.header("Content-Type", "application/json")//
+				.param("amount", "100")//
+				.param("type", "type1")//
+				.param("parent_id", "1")//
+				.sessionAttr("transactionDTO", new TransactionDTO())//
+		).andExpect(jsonPath("status", is("error")))//
+				.andExpect(jsonPath("message", is("The transaction parent cannot be the same of transaction")));
 
 	}
 

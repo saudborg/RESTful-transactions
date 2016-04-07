@@ -5,6 +5,11 @@ import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+/**
+ * Represents the class which is serializable and persisted
+ * @author sauloborges
+ *
+ */
 @Entity
 public class TransactionDTO implements Serializable {
 
@@ -53,5 +58,13 @@ public class TransactionDTO implements Serializable {
 	public void setParentId(Long parentId) {
 		this.parentId = parentId;
 	}
+
+	@Override
+	public String toString() {
+		return "TransactionDTO [transactionId=" + transactionId + ", amount=" + amount + ", type=" + type
+				+ ", parentId=" + parentId + "]";
+	}
+	
+	
 
 }

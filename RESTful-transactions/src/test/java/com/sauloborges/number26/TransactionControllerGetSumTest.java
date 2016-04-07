@@ -20,6 +20,11 @@ import com.sauloborges.number26.entity.TransactionDTO;
 import com.sauloborges.number26.repository.TransactionRepository;
 import com.sauloborges.number26.utils.TransactionTestUtils;
 
+/**
+ * Tests for get a sum of all transactions that are transitively linked by their parent_id 
+ * @author sauloborges
+ *
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { Application.class })
 @WebAppConfiguration
@@ -53,6 +58,10 @@ public class TransactionControllerGetSumTest {
 				;
 	}
 
+	/**
+	 * 2 transactions with the same parent_id
+	 * @throws Exception
+	 */
 	@Test
 	public void getSum2() throws Exception {
 		TransactionDTO transaction1 = utils.createTransaction();
@@ -65,6 +74,10 @@ public class TransactionControllerGetSumTest {
 				;
 	}
 
+	/**
+	 * 3 transaction with the same parent_id
+	 * @throws Exception
+	 */
 	@Test
 	public void getSum3() throws Exception {
 		TransactionDTO transaction1 = utils.createTransaction();
@@ -79,6 +92,12 @@ public class TransactionControllerGetSumTest {
 				;
 	}
 
+	/**
+	 * 3 transactions with the same parent_id
+	 * 3 transactions with another parent_id
+	 *
+	 * @throws Exception
+	 */
 	@Test
 	public void getSum3And2WithDifferentsParents() throws Exception {
 		TransactionDTO transaction1 = utils.createTransaction();
@@ -97,6 +116,10 @@ public class TransactionControllerGetSumTest {
 				;
 	}
 
+	/**
+	 * Test with an invalid transaction
+	 * @throws Exception
+	 */
 	@Test
 	public void getSum0() throws Exception {
 		utils.createTransaction();

@@ -13,6 +13,11 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import com.sauloborges.number26.entity.TransactionDTO;
 import com.sauloborges.number26.service.TransactionService;
 
+/**
+ * General tests
+ * @author sauloborges
+ *
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { Application.class })
 @WebAppConfiguration

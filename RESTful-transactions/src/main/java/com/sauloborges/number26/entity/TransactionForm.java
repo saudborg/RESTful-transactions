@@ -2,6 +2,11 @@ package com.sauloborges.number26.entity;
 
 import java.io.Serializable;
 
+/**
+ * Represents a class that communicate client / server side
+ * @author sauloborges
+ *
+ */
 public class TransactionForm implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -38,5 +43,12 @@ public class TransactionForm implements Serializable {
 	public void setParent_id(Long parentId) {
 		this.parent_id = parentId;
 	}
+
+	@Override
+	public String toString() {
+		return "TransactionForm [amount=" + amount + ", type=" + type + ", parent_id=" + parent_id + "]";
+	}
+	
+	
 
 }

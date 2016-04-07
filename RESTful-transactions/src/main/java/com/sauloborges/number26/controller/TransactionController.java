@@ -15,6 +15,7 @@ import com.google.gson.JsonObject;
 import com.sauloborges.number26.entity.TransactionDTO;
 import com.sauloborges.number26.entity.TransactionForm;
 import com.sauloborges.number26.exception.ParameterNotNullException;
+import com.sauloborges.number26.exception.TransactionNotBeParentForItSelfExcepetion;
 import com.sauloborges.number26.exception.TransactionNotFoundException;
 import com.sauloborges.number26.service.TransactionService;
 
@@ -24,6 +25,14 @@ public class TransactionController {
 	@Autowired
 	private TransactionService transactionService;
 
+	/**
+	 * This method is called to put or update a transaction in the system.
+	 * It will validate if could be add on system and return a Json
+	 * 
+	 * @param transaction_id
+	 * @param transactionForm
+	 * @return
+	 */
 	@RequestMapping(value = "/transactionservice/transaction/{transaction_id}", method = RequestMethod.PUT, produces = {
 			MediaType.APPLICATION_JSON_VALUE }, consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.ALL_VALUE })
 	public String putTransaction(@PathVariable("transaction_id") Long transaction_id,
@@ -41,13 +50,26 @@ public class TransactionController {
 		return response.toString();
 	}
 
+	/**
+	 * Valid a transaction. The amount and type cannot be null and the parent_id should be valid
+	 * To be valid, should exists and cannot be the same of the current transaction
+	 * @param transactionForm
+	 * @param transaction_id
+	 * @return
+	 * @throws ParameterNotNullException
+	 * @throws TransactionNotFoundException
+	 * @throws TransactionNotBeParentForItSelfExcepetion 
+	 */
 	private TransactionDTO validateTransaction(TransactionForm transactionForm, Long transaction_id)
-			throws ParameterNotNullException, TransactionNotFoundException {
+			throws ParameterNotNullException, TransactionNotFoundException, TransactionNotBeParentForItSelfExcepetion {
 		if (transactionForm.getAmount() == null) {
 			throw new ParameterNotNullException("amount");
 		}
 		if (transactionForm.getType() == null) {
 			throw new ParameterNotNullException("type");
+		}
+		if (transactionForm.getParent_id() == transaction_id){
+			throw new TransactionNotBeParentForItSelfExcepetion();
 		}
 		validateParentId(transactionForm.getParent_id());
 		
@@ -60,7 +82,7 @@ public class TransactionController {
 		return transaction;
 	}
 
-	private void validateParentId(Long parentId) throws TransactionNotFoundException {
+	private void validateParentId(Long parentId) throws TransactionNotFoundException, TransactionNotBeParentForItSelfExcepetion {
 		if (parentId != null) {
 			TransactionDTO transactionId = transactionService.findByTransactionId(parentId);
 			if (transactionId == null) {
@@ -69,6 +91,11 @@ public class TransactionController {
 		}
 	}
 
+	/**
+	 * This method search in system the transaction to get its information.
+	 * @param transaction_id
+	 * @return
+	 */
 	@RequestMapping(value = "/transactionservice/transaction/{transaction_id}", method = RequestMethod.GET)
 	public String getTransaction(@PathVariable("transaction_id") Long transaction_id) {
 		Gson gson = new Gson();
@@ -91,6 +118,11 @@ public class TransactionController {
 		return gson.toJson(form);
 	}
 
+	/**
+	 * Transform an object received by rest in an object to be persisted
+	 * @param transactionDTO
+	 * @return
+	 */
 	private TransactionForm transformDTOinForm(TransactionDTO transactionDTO) {
 		TransactionForm form = new TransactionForm();
 		form.setAmount(transactionDTO.getAmount());
@@ -99,6 +131,11 @@ public class TransactionController {
 		return form;
 	}
 
+	/**
+	 * Receive a type and search for all transactions with this type and return a list of IDs
+	 * @param type
+	 * @return
+	 */
 	@RequestMapping(value = "/transactionservice/types/{type}", method = RequestMethod.GET)
 	public String getListTransactionByType(@PathVariable("type") String type) {
 		JsonObject response = new JsonObject();
@@ -119,8 +156,14 @@ public class TransactionController {
 		return gson.toJson(transactionList);
 	}
 
+	/**
+	 * Receive a transaction id and search in all transactions with has this transaction as parent id and also the transaction
+	 * @param parentId
+	 * @return
+	 * @throws TransactionNotBeParentForItSelfExcepetion
+	 */
 	@RequestMapping(value = "/transactionservice/sum/{transaction_id}", method = RequestMethod.GET)
-	public String getSumTransactionByParentId(@PathVariable("transaction_id") Long parentId) {
+	public String getSumTransactionByParentId(@PathVariable("transaction_id") Long parentId) throws TransactionNotBeParentForItSelfExcepetion {
 		JsonObject response = new JsonObject();
 
 		if (parentId == null) {
